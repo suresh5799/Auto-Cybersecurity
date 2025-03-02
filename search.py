@@ -385,14 +385,7 @@ lfiles=os.listdir(upload)
 lfiles1=os.listdir(upload1) 
 lfiles2=os.listdir(upload2) 
 
-if "selected_folder" not in st.session_state:
-    st.session_state.selected_folder = None
-if "selected_folder1" not in st.session_state:
-    st.session_state.selected_folder1 = None
-if "file_selected" not in st.session_state:
-    st.session_state.file_selected = False
-if "asset_selected" not in st.session_state:
-    st.session_state.asset_selected = False
+
 
 ############################################################  
 """
@@ -406,6 +399,14 @@ if "asset_selected" not in st.session_state:
 """
 
 def show_search(): 
+    if "selected_folder" not in st.session_state:
+        st.session_state.selected_folder = None
+    if "selected_folder1" not in st.session_state:
+        st.session_state.selected_folder1 = None
+    if "file_selected" not in st.session_state:
+        st.session_state.file_selected = False
+    if "asset_selected" not in st.session_state:
+        st.session_state.asset_selected = False
     #set_background()
     if "pdf_generated" not in st.session_state:
         st.session_state.pdf_generated = False
