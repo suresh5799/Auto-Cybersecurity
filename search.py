@@ -502,7 +502,7 @@ def show_search():
                                     st.session_state.asset_selected = True
                                     #print(goal_name)
                                     #if "uploaded_file" is not None: #not in st.session_state or not st.session_state["uploaded_file"]:
-                                    if lfiles:   
+                                    #if lfiles:   
                                     
                                         #for file in os.listdir(upload):
                                         
@@ -546,9 +546,9 @@ def show_search():
                                         
                                         # Display download button if PDF is generated
                                         
-                                    else:
-                                        st.error("Kindly upload the file before initializing the search")
-                                        st.error("No files uploaded. Please upload the files first on the Upload File page.")
+                                    #else:
+                                        #st.error("Kindly upload the file before initializing the search")
+                                        #st.error("No files uploaded. Please upload the files first on the Upload File page.")
 
                                 else:
                                     st.error("Enter the asset Name") 
