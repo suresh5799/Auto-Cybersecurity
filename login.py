@@ -34,8 +34,8 @@ if "username" not in st.session_state:
 # Predefined credentials   
 #st.select_slider.ENGINEERS=ENGINEERS
 
-ENGINEERS = {"aaa": "123","ccc":"000","ddd":"111"}
-ADMINS = {"bbb": "234"}
+ENGINEERS = {"40037840":"40037840","40037842":"40037842","40037797":"40037797","40035022":"40035022"}
+ADMINS = {"40037840":"40037840","40036090":"40036090","40024959":"40024959","40036682":"40036682","40028412":"40028412"}
 
 
 # Function to set background image from local folder
