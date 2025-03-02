@@ -159,7 +159,7 @@ def create_pdf():
                                 
             # Provide a download button
             st.success("PDF successfully generated!")
-            time.sleep(3))
+            time.sleep(3)
             with open(pdf_path, "rb") as pdf_file:    
                 st.download_button(label="Download Extracted Data",data=pdf_file,file_name=pdf_filename,mime="application/pdf")
         # except Exception as e:
