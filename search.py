@@ -499,7 +499,7 @@ def show_search():
 
     ##############################################################################################################################                            
                                 if asset:
-                                    st.session_state.asset_selected = True
+                                            st.session_state.asset_selected = True
                                     #print(goal_name)
                                     #if "uploaded_file" is not None: #not in st.session_state or not st.session_state["uploaded_file"]:
                                     #if lfiles:   
