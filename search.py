@@ -130,6 +130,8 @@ def create_pdf():
                                 
             # Sample extracted data (stored as a list)
             data = d1
+            st.success("\nGenerating PDF...")  # Debugging log
+            time.sleep(2)
         #try:
             # Convert list to string (each item in new line)
             pdf_content = "\n".join(data)
@@ -157,7 +159,7 @@ def create_pdf():
                                 
             # Provide a download button
             st.success("PDF successfully generated!")
-            time.sleep(5)
+            time.sleep(3))
             with open(pdf_path, "rb") as pdf_file:    
                 st.download_button(label="Download Extracted Data",data=pdf_file,file_name=pdf_filename,mime="application/pdf")
         # except Exception as e:
