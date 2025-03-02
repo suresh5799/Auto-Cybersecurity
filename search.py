@@ -385,10 +385,10 @@ lfiles=os.listdir(upload)
 lfiles1=os.listdir(upload1) 
 lfiles2=os.listdir(upload2) 
 
-if "selected" not in st.session_state:
-    st.session_state.selected = None
-if "selected1" not in st.session_state:
-    st.session_state.selected1 = None
+if "selected_folder" not in st.session_state:
+    st.session_state.selected_folder = None
+if "selected_folder1" not in st.session_state:
+    st.session_state.selected_folder1 = None
 if "file_selected" not in st.session_state:
     st.session_state.file_selected = False
 if "asset_selected" not in st.session_state:
@@ -452,8 +452,8 @@ def show_search():
         selected=option_menu(menu_title=None,options=["CS Goals","CLIENT FOLDER","POC FOLDER"],icons=["🔍","bi bi-folder","bi bi-folder"],orientation="horizontal",)
         # Initialize session state variables
         # Initialize session state variables
-        if selected != st.session_state.selected:
-            st.session_state.selected = selected
+        if selected != st.session_state.selected_folder:
+            st.session_state.selected_folder = selected
             st.session_state.file_selected = False
             st.session_state.asset_selected = False
     
@@ -760,8 +760,8 @@ def show_search():
        
         selected1=option_menu(menu_title=None,options=["CS Goals","CLIENT FOLDER","POC FOLDER"],icons=["","bi bi-folder","bi bi-folder"],orientation="horizontal",)
         #print(selected)
-        if selected1 != st.session_state.selected1:
-            st.session_state.selected1 = selected1
+        if selected1 != st.session_state.selected_folder1:
+            st.session_state.selected_folder1 = selected1
             st.session_state.file_selected = False
             st.session_state.asset_selected = False
 
