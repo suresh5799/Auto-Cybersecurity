@@ -169,7 +169,7 @@ def create_pdf():
 
 
 def generate_pdf():
-    try:
+   # try:
         #if st.button("gen"):
             st.success("\nGenerating PDF...")  # Debugging log
             time.sleep(2)
@@ -204,8 +204,8 @@ def generate_pdf():
                 
                 st.download_button(label="Download PDF",data=pdf_file,file_name="requirements.pdf",mime="application/pdf")
  
-    except Exception as e:
-        st.error(f"❌ Error generating PDF: {e}")
+    #except Exception as e:
+        #st.error(f"❌ Error generating PDF: {e}")
  
 
 
