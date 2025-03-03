@@ -33,9 +33,9 @@ elif st.session_state.page == "upload_file":
     upload_file.show_upload_file()
 #elif st.session_state.page == "old" :
     #old.show_old()
-elif st.session_state.page == "delete_file" and st.session_state.role=="Admin":
+elif st.session_state.page == "delete_file" and st.session_state.role=="Architect":
     delete_file.show_delete_file()
-elif st.session_state.page == "list_of_files" and st.session_state.role=="Admin":
+elif st.session_state.page == "list_of_files" and st.session_state.role=="Architect":
     list_of_files.show_list_of_files()
 
 
