@@ -131,7 +131,7 @@ def create_pdf():
             # Sample extracted data (stored as a list)
             data = d1
             st.success("\nGenerating PDF...")  # Debugging log
-            time.sleep(2)
+            
         #try:
             # Convert list to string (each item in new line)
             pdf_content = "\n".join(data)
