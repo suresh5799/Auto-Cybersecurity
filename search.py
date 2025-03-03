@@ -726,7 +726,7 @@ def show_search():
         
 
 
-    if st.session_state.role=="Admin":
+    if st.session_state.role=="Architect":
     
         col1, col2, col3,col5 = st.columns([29,25,30,12])
     
