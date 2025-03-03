@@ -986,7 +986,7 @@ def show_search():
                                     #for a in error:
                                         #st.error(f"No matching goal found in this file:{a}")
                                     
-                                    if pdf_text:
+                                    if text:
                                          create_pdf()
                                     
                                         # The message and nested widget will remain on the page
