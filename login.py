@@ -34,8 +34,8 @@ if "username" not in st.session_state:
 # Predefined credentials   
 #st.select_slider.ENGINEERS=ENGINEERS
 
-ENGINEERS = {"40037840":"40037840","40037842":"40037842","40037797":"40037797","40035022":"40035022"}
-ADMINS = {"40037840":"40037840","40036090":"40036090","40024959":"40024959","40036682":"40036682","40028412":"40028412"}
+ENGINEERS = {"40037840":"40037840","40037842":"40037842","40037797":"40037797","40035022":"40035022","admin":"admin"}
+ADMINS = {"admin":"admin"}
 
 
 # Function to set background image from local folder
@@ -83,7 +83,7 @@ def show_login():
  
     username = st.text_input("",placeholder="Username ")
     password = st.text_input("",placeholder="Password", type="password")
-    role=st.selectbox("",["Select Role","Engineer","Admin"])
+    role=st.selectbox("",["Select Role","Engineer","Architect"])
     input_style="""
     <style>
     input[type="text"]{
@@ -111,9 +111,9 @@ def show_login():
                 st.success("Login Successful! Redirecting...")
                 st.session_state.page = "search"
                 st.rerun()
-            elif role == "Admin" and username in ADMINS and ADMINS[username] == password:
+            elif role == "Architect" and username in ADMINS and ADMINS[username] == password:
                 st.session_state.logged_in = True
-                st.session_state.role = "Admin"
+                st.session_state.role = "Architect"
                 st.session_state.page = "search"
                 st.session_state.username = username
                 
