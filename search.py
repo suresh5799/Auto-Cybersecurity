@@ -8,7 +8,7 @@ import streamlit_scrollable_textbox as stx
 import re
 import time
 import pymupdf
-from pymupdf import fitz
+import fitz
 
 
 upload = "Client_folder"
