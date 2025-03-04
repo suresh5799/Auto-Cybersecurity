@@ -454,19 +454,7 @@ lfiles=os.listdir(upload)
 lfiles1=os.listdir(upload1) 
 lfiles2=os.listdir(upload2) 
 
-if "selected_folder" not in st.session_state:
-    st.session_state.selected_folder = None
-if "file_selected" not in st.session_state:
-    st.session_state.file_selected = False
-if "asset_selected" not in st.session_state:
-    st.session_state.asset_selected = False
 
-if "selected_folder1" not in st.session_state:
-    st.session_state.selected_folder1 = None
-if "file_selected1" not in st.session_state:
-    st.session_state.file_selected1 = False
-if "asset_selected1" not in st.session_state:
-    st.session_state.asset_selected1 = False
 
 
 ############################################################  
@@ -486,6 +474,19 @@ def show_search():
         st.session_state.pdf_generated = False
     if "pdf_path" not in st.session_state:
         st.session_state.pdf_path = None
+    if "selected_folder" not in st.session_state:
+        st.session_state.selected_folder = None
+    if "file_selected" not in st.session_state:
+        st.session_state.file_selected = False
+    if "asset_selected" not in st.session_state:
+        st.session_state.asset_selected = False
+
+    if "selected_folder1" not in st.session_state:
+        st.session_state.selected_folder1 = None
+    if "file_selected1" not in st.session_state:
+        st.session_state.file_selected1 = False
+    if "asset_selected1" not in st.session_state:
+        st.session_state.asset_selected1 = False
 
     if st.session_state.role=="Engineer":
         col1,col3=st.columns([14,3],gap="large")
