@@ -20,8 +20,11 @@ upload2 ="CS_Goals_folder"
 os.makedirs(upload2, exist_ok=True)
 
 d1=[]
+d2=[]
 d=[] 
 error=[]
+error1=[]
+error2=[]
 
 def set_background():
     image_path = "images/new0.jpg"
@@ -129,10 +132,8 @@ def create_pdf():
             #st.title("Report Generated")
                                 
             # Sample extracted data (stored as a list)
-            data = d1
-            st.success("\nGenerating PDF...")  # Debugging log
-            
-       # try:
+            data = d2
+        #try:
             # Convert list to string (each item in new line)
             pdf_content = "\n".join(data)
                                 
@@ -159,24 +160,40 @@ def create_pdf():
                                 
             # Provide a download button
             st.success("PDF successfully generated!")
-            time.sleep(3)
+            time.sleep(2)
             with open(pdf_path, "rb") as pdf_file:    
                 st.download_button(label="Download Extracted Data",data=pdf_file,file_name=pdf_filename,mime="application/pdf")
-         #except Exception as e:
-            #  pass
+        # except Exception as e:
            # st.error(f"Error generating PDF: {e}")
            # st.write(f"Exception Occurred: {e}")  # Debugging logs
 ##########################################GENERATE PDF######################################################
 
 
-def generate_pdf():
-   # try:
+
+def clean_text(text):
+    if isinstance(text,list):
+         text="\n".join(text)
+    replacements = {
+        "“": '"', "”": '"',  # Replace smart quotes
+        "‘": "'", "’": "'",  # Replace single smart quotes
+        "–": "-", "—": "-",  # Replace long dashes
+        "…" : "...",         # Replace ellipsis
+        "\u200b": "", "\xa0": " "  # Remove zero-width spaces & non-breaking spaces
+    }
+    for key, value in replacements.items():
+        text = text.replace(key, value)
+    return text
+
+def generate_pdf(d,file):
+    
+    try:
         #if st.button("gen"):
             st.success("\nGenerating PDF...")  # Debugging log
-            
+            time.sleep(2)
             
             # Sample content
-            pdf_content = "\n".join(d)
+            #pdf_content = "\n".join(d)
+            pdf_content=clean_text(d)
     
             # Create PDF object
             pdf = FPDF()
@@ -189,8 +206,18 @@ def generate_pdf():
             os.makedirs(pdf_folder, exist_ok=True)
     
             # Define file path
-            pdf_path = os.path.join(pdf_folder, "requirements.pdf")
-    
+            #pdf_path = os.path.join(pdf_folder, "requirements.pdf")
+           # file="abcd"
+            file=file+".pdf"
+            pdf_path = os.path.join(pdf_folder,file)
+
+            if os.path.exists(pdf_path):
+                 os.remove(pdf_path)
+            #base_name,extention=os.path.splitext(pdf_path)
+            #c=1
+            #while os.path.exists(pdf_path):
+            #     pdf_path=f"({base_name}_{c}{extention})"
+            #     c=c+1
             # ✅ Save the PDF
             pdf.output(pdf_path)
     
@@ -199,15 +226,16 @@ def generate_pdf():
             st.session_state.pdf_path = pdf_path
             
             st.success("PDF successfully generated!")
-            time.sleep(3)
+            time.sleep(2)
             st.write("Ready for Download!")
             with open(st.session_state.pdf_path, "rb") as pdf_file:
                 
-                st.download_button(label="Download PDF",data=pdf_file,file_name="requirements.pdf",mime="application/pdf")
+                st.download_button(label="Download PDF",data=pdf_file,file_name=file,mime="application/pdf")
+            d.clear()
  
-   # except Exception as e:
-       # pass
-        #st.error(f"❌ Error generating PDF: {e}")
+    except Exception as e:
+        #pass
+        st.error(f"❌ Error generating PDF: {e}")
  
 
 
@@ -217,7 +245,7 @@ def text_file():
     # Sample extracted data (stored as a list)
     #if "d" not in st.session_state:
     #    st.session_state.d = d
-    data=d1
+    data=d2
     #st.write("d:", st.session_state.d)
     
     # Ensure the folder exists
@@ -250,6 +278,7 @@ def normalize_text(text):
 
 
 #########################################################################################################
+'''
 def extract_text_from_pdf(file_path,goal_name,file):
             results = {}
             #self.get_doc=0
@@ -310,8 +339,43 @@ def extract_text_from_pdf(file_path,goal_name,file):
                         #All the requirements and goal name are prestent in the l list[]
                             results[file] = l
             return results
-
+'''
 #########################################################################################################
+def extract_text_from_pdf(file_path, asset_name,file):
+        results = {}
+        if file_path.endswith(".pdf"):
+            with fitz.open(file_path) as doc:
+                text = ""
+                for page in doc:
+                    text += page.get_text("text")
+                text = normalize_text(text)
+                asset_name = normalize_text(asset_name)
+                extracted_text = []
+                start_fetching = False
+                section_number = None
+                lines = text.splitlines()
+                for line in lines:
+                    stripped_line = line.strip()
+                    # Match only top-level sections like "1. Some_Name", "2. Some_Name" (not "1.1 Some_Name")
+                    match = re.match(r"^(\d+)\.\s+(.+)", stripped_line)  # Capture "1. Asset_Name"
+                    if match:
+                        new_section_number = int(match.group(1))  # Extract top-level section number
+                        if start_fetching:
+                            if new_section_number > section_number:
+                                break  # Stop when the next main section starts
+                        section_number = new_section_number
+                        if asset_name.lower() in match.group(2).lower():
+                            start_fetching = True  # Start extraction
+                            extracted_text.append(stripped_line)
+                            continue
+                    if start_fetching:
+                        if not stripped_line:
+                            extracted_text.append("")  # Add blank line for formatting
+                        else:
+                            extracted_text.append(stripped_line)
+                results[file] = extracted_text
+        return results  
+########################################################################################################
 def list_files():
     if os.path.exists(upload):
         return os.listdir(upload) 
@@ -389,6 +453,19 @@ lfiles=os.listdir(upload)
 lfiles1=os.listdir(upload1) 
 lfiles2=os.listdir(upload2) 
 
+if "selected_folder" not in st.session_state:
+    st.session_state.selected_folder = None
+if "file_selected" not in st.session_state:
+    st.session_state.file_selected = False
+if "asset_selected" not in st.session_state:
+    st.session_state.asset_selected = False
+
+if "selected_folder1" not in st.session_state:
+    st.session_state.selected_folder1 = None
+if "file_selected1" not in st.session_state:
+    st.session_state.file_selected1 = False
+if "asset_selected1" not in st.session_state:
+    st.session_state.asset_selected1 = False
 
 
 ############################################################  
@@ -403,14 +480,6 @@ lfiles2=os.listdir(upload2)
 """
 
 def show_search(): 
-    if "selected_folder" not in st.session_state:
-        st.session_state.selected_folder = None
-    if "selected_folder1" not in st.session_state:
-        st.session_state.selected_folder1 = None
-    if "file_selected" not in st.session_state:
-        st.session_state.file_selected = False
-    if "asset_selected" not in st.session_state:
-        st.session_state.asset_selected = False
     #set_background()
     if "pdf_generated" not in st.session_state:
         st.session_state.pdf_generated = False
@@ -466,8 +535,7 @@ def show_search():
         l=["aaa","ccc"]
 
         try:
-            #if selected == 'CLIENT FOLDER' and st.session_state.username in l:
-            if selected == 'CLIENT FOLDER':
+            if selected == 'CLIENT FOLDER' and st.session_state.username in l:
                 if os.path.exists(upload):
                         
                         files=list_files()
@@ -505,8 +573,9 @@ def show_search():
                                 if asset:
                                     st.session_state.asset_selected = True
                                     #print(goal_name)
+                                    
                                     #if "uploaded_file" is not None: #not in st.session_state or not st.session_state["uploaded_file"]:
-                                    if lfiles:   
+                                    if files:   
                                     
                                         #for file in os.listdir(upload):
                                         
@@ -523,7 +592,7 @@ def show_search():
                                                         st.write(a)
                                                         d.append(a)
                                                     d.append("\n")
-                                                generate_pdf()
+                                                generate_pdf(d,asset)
                                             else:
                                                 error.append(file)
                                                 #st.warning(f"No matching goal found in this:{file}")
@@ -555,9 +624,9 @@ def show_search():
                                         st.error("No files uploaded. Please upload the files first on the Upload File page.")
 
                                 else:
-                                    st.error("Enter the asset Name") 
-                                st.session_state.reset_trigger = True  # Set the trigger to reset session state
-                                st.experimental_rerun() 
+                                    st.error("Select the asset Name") 
+                               # st.session_state.reset_trigger = True  # Set the trigger to reset session state
+                               # st.experimental_rerun() 
 
 #############################################################################################################################
             #elif selected == 'POC FOLDER':
@@ -601,7 +670,7 @@ def show_search():
     ##############################################################################################################################                            
                                 if asset:
                                     st.session_state.asset_selected = True
-                                    if lfiles1:   
+                                    if files1:   
                                     
                                         #for file in os.listdir(upload):
                                             file_path = os.path.join(upload1, file1)
@@ -611,13 +680,13 @@ def show_search():
                                             if pdf_text:
                                                 for file,text in pdf_text.items():
                                                     #st.write(f"### Results from: {file}")
-                                                    d.append(file)
+                                                    d1.append(file)
                                                     #st.write(text)
                                                     for a in text:
                                                         st.write(a)
-                                                        d.append(a)
-                                                    d.append("\n")
-                                                generate_pdf()
+                                                        d1.append(a)
+                                                    d1.append("\n")
+                                                generate_pdf(d1,asset)
                                             else:
                                                 error.append(file)
                                                 #st.warning(f"No matching goal found in this:{file}")
@@ -649,7 +718,7 @@ def show_search():
                                         st.error("No files uploaded. Please upload the files first on the Upload File page.")
 
                                 else:
-                                    st.error("Enter the asset Name") 
+                                    st.error("Select the asset Name") 
 #############################################################################################################################
             elif selected == "CS Goals":
 
@@ -662,50 +731,53 @@ def show_search():
                         goal_name=goal_name1.lower()
                         
                         if st.button("Search"):
+                            
                             if goal_name:
                                 #print(goal_name)
                                 #if "uploaded_file" is not None: #not in st.session_state or not st.session_state["uploaded_file"]:
-                                if lfiles2:   
+                                        if os.listdir(upload2):
                                 
-                                    for file in os.listdir(upload2):
-                                        file_path = os.path.join(upload2, file)
-                                        #print(goal_name)
-                                        pdf_text = extract_text_from_pdf1(file_path,goal_name,file)
-                                        if pdf_text:
-                                            for file,text in pdf_text.items():
-                                                st.write(f"### Results from: {file}")
-                                                d1.append(file)
-                                                #st.write(text)
-                                                for a in text:
-                                                    st.write(a)
-                                                    d1.append(a)
-                                                d1.append("\n")
-
-                                            
-                                        else:
-                                            error.append(file)
-                                            #st.warning(f"No matching goal found in this:{file}")
-                                    
-                                    st.error(f"No matching goal found in this files:{error}")
-                                    #for a in error:
-                                        #st.error(f"No matching goal found in this file:{a}")
-                                    
-                                    if text:
-                                        create_pdf()
-                                    
-                                        # The message and nested widget will remain on the page
-                                    
-                                    
+                                            for file in os.listdir(upload2):
                                         
-                                    #text_file()
+                                                file_path = os.path.join(upload2, file)
+                                                #print(goal_name)
+                                                pdf_text = extract_text_from_pdf1(file_path,goal_name,file)
+                                                if pdf_text:
+                                                    for file,text in pdf_text.items():
+                                                        st.write(f"### Results from: {file}")
+                                                        d2.append(file)
+                                                        #st.write(text)
+                                                        for a in text:
+                                                            st.write(a)
+                                                            d2.append(a)
+                                                        d2.append("\n")
+
+                                                    
+                                                else:
+                                                    error2.append(file)
+                                                    #st.warning(f"No matching goal found in this:{file}")
+                                            
+                                            st.error(f"No matching goal found in this files:{error2}")
+                                            #for a in error:
+                                                #st.error(f"No matching goal found in this file:{a}")
+                                            
+                                            if text:
+                                                #create_pdf()
+                                                generate_pdf(d2,goal_name)
+                                            
+                                                # The message and nested widget will remain on the page
+                                            
+                                            
+                                                
+                                            #text_file()
+                                            
+                                            #generate_pdf()
+                                            
+                                            # Display download button if PDF is generated
                                     
-                                    #generate_pdf()
-                                    
-                                    # Display download button if PDF is generated
-                                    
-                                else:
-                                    st.error("Kindly upload the file before initializing the search")
-                                    st.error("No files uploaded. Please upload the files first on the Upload File page.")
+                                        else:
+                                            st.error("Kindly upload the file before initializing the search")
+                                            st.error("No files uploaded. Please upload the files first on the Upload File page.")
 
                             else:
                                 st.error("Enter the Goal Name")
@@ -767,8 +839,8 @@ def show_search():
         #print(selected)
         if selected1 != st.session_state.selected_folder1:
             st.session_state.selected_folder1 = selected1
-            st.session_state.file_selected = False
-            st.session_state.asset_selected = False
+            st.session_state.file_selected1 = False
+            st.session_state.asset_selected1 = False
 
         try:
             if selected1 == "CLIENT FOLDER":
@@ -782,14 +854,14 @@ def show_search():
                         if st.button("Submit",key="sub_file"):
                             if file:
                                 #st.session_state.show_second = True  # Show second dropdown
-                                st.session_state.file_selected = True
-                                st.session_state.asset_selected= False
+                                st.session_state.file_selected1 = True
+                                st.session_state.asset_selected1 = False
                             #st.session_state.show_second = True  # Show second dropdown
 
                         elif file=="Select a afile":
                             st.warning("The folder does not exist yet. Please upload a file using Fileiploader Page")
 
-                        if st.session_state.file_selected:
+                        if st.session_state.file_selected1:
                             
                             file_path = os.path.join(upload, file)
                                 #print(file_path)
@@ -801,10 +873,10 @@ def show_search():
                             if st.button("Submit",key="sub_asset"):
     ##############################################################################################################################                            
                                 if asset:
-                                    st.session_state.asset_selected= True
+                                    st.session_state.asset_selected1 = True
                                     #print(goal_name)
                                     #if "uploaded_file" is not None: #not in st.session_state or not st.session_state["uploaded_file"]:
-                                    if lfiles:   
+                                    if files:   
                                     
                                         #for file in os.listdir(upload):
                                         
@@ -821,7 +893,7 @@ def show_search():
                                                         st.write(a)
                                                         d.append(a)
                                                     d.append("\n")
-                                                generate_pdf()
+                                                generate_pdf(d,asset)
                                             else:
                                                 error.append(file)
                                                 #st.warning(f"No matching goal found in this:{file}")
@@ -853,7 +925,7 @@ def show_search():
                                         st.error("No files uploaded. Please upload the files first on the Upload File page.")
 
                                 else:
-                                    st.error("Enter the asset Name")  
+                                    st.error("Select the asset Name")  
 
 #############################################################################################################################
             #elif selected == 'POC FOLDER':
@@ -877,13 +949,13 @@ def show_search():
                         if st.button("Submit",key="sub_file1"):
                             if file1:
                                 #st.session_state.show_second = True  # Show second dropdown
-                                st.session_state.file_selected = True
-                                st.session_state.asset_selected= False
+                                st.session_state.file_selected1 = True
+                                st.session_state.asset_selected1 = False
                         
                         elif file1=="Select a afile":
                             st.warning("The folder does not exist yet. Please upload a file using Fileiploader Page")
 
-                        if st.session_state.file_selected:
+                        if st.session_state.file_selected1:
                             
                             file_path = os.path.join(upload1, file1)
                                 #print(file_path)
@@ -895,10 +967,10 @@ def show_search():
                             if st.button("Submit",key="sub_asset"):
     ##############################################################################################################################                            
                                 if asset:
-                                    st.session_state.asset_selected= True
+                                    st.session_state.asset_selected1 = True
                                     #print(goal_name)
                                     #if "uploaded_file" is not None: #not in st.session_state or not st.session_state["uploaded_file"]:
-                                    if lfiles1:   
+                                    if files1:   
                                     
                                         #for file in os.listdir(upload):
                                             file_path = os.path.join(upload1, file1)
@@ -908,13 +980,13 @@ def show_search():
                                             if pdf_text:
                                                 for file,text in pdf_text.items():
                                                     #st.write(f"### Results from: {file}")
-                                                    d.append(file)
+                                                    d1.append(file)
                                                     #st.write(text)
                                                     for a in text:
                                                         st.write(a)
-                                                        d.append(a)
-                                                    d.append("\n")
-                                                generate_pdf()
+                                                        d1.append(a)
+                                                    d1.append("\n")
+                                                generate_pdf(d1,asset)
                                             else:
                                                 error.append(file)
                                                 #st.warning(f"No matching goal found in this:{file}")
@@ -946,7 +1018,7 @@ def show_search():
                                         st.error("No files uploaded. Please upload the files first on the Upload File page.")
 
                                 else:
-                                    st.error("Enter the asset Name") 
+                                    st.error("Select the asset Name") 
 #############################################################################################################################
             elif selected1 == "CS Goals":
 
@@ -962,7 +1034,7 @@ def show_search():
                             if goal_name:
                                 #print(goal_name)
                                 #if "uploaded_file" is not None: #not in st.session_state or not st.session_state["uploaded_file"]:
-                                if lfiles2:   
+                                if os.listdir(upload2):   
                                 
                                     for file in os.listdir(upload2):
                                         file_path = os.path.join(upload2, file)
@@ -971,25 +1043,26 @@ def show_search():
                                         if pdf_text:
                                             for file,text in pdf_text.items():
                                                 st.write(f"### Results from: {file}")
-                                                d1.append(file)
+                                                d2.append(file)
                                                 #st.write(text)
                                                 for a in text:
                                                     st.write(a)
-                                                    d1.append(a)
-                                                d1.append("\n")
+                                                    d2.append(a)
+                                                d2.append("\n")
 
                                             
                                         else:
-                                            error.append(file)
+                                            error2.append(file)
                                             #st.warning(f"No matching goal found in this:{file}")
                                         
                                     
-                                    st.error(f"No matching goal found in this files:{error}")
+                                    st.error(f"No matching goal found in this files:{error2}")
                                     #for a in error:
                                         #st.error(f"No matching goal found in this file:{a}")
                                     
-                                    if text:
-                                         create_pdf()
+                                    if pdf_text:
+                                        #create_pdf()
+                                        generate_pdf(d2,goal_name)
                                     
                                         # The message and nested widget will remain on the page
                                     
