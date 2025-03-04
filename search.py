@@ -132,7 +132,7 @@ def create_pdf():
             data = d1
             st.success("\nGenerating PDF...")  # Debugging log
             
-        #try:
+        try:
             # Convert list to string (each item in new line)
             pdf_content = "\n".join(data)
                                 
@@ -162,14 +162,15 @@ def create_pdf():
             time.sleep(3)
             with open(pdf_path, "rb") as pdf_file:    
                 st.download_button(label="Download Extracted Data",data=pdf_file,file_name=pdf_filename,mime="application/pdf")
-        # except Exception as e:
+         except Exception as e:
+              pass
            # st.error(f"Error generating PDF: {e}")
            # st.write(f"Exception Occurred: {e}")  # Debugging logs
 ##########################################GENERATE PDF######################################################
 
 
 def generate_pdf():
-   # try:
+    try:
         #if st.button("gen"):
             st.success("\nGenerating PDF...")  # Debugging log
             time.sleep(2)
@@ -204,7 +205,8 @@ def generate_pdf():
                 
                 st.download_button(label="Download PDF",data=pdf_file,file_name="requirements.pdf",mime="application/pdf")
  
-    #except Exception as e:
+    except Exception as e:
+        pass
         #st.error(f"❌ Error generating PDF: {e}")
  
 
