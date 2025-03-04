@@ -7,7 +7,8 @@ from fpdf import FPDF
 import streamlit_scrollable_textbox as stx
 import re
 import time
-import fitz
+import pymupdf
+from pymupdf import fitz
 
 
 upload = "Client_folder"
