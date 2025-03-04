@@ -537,7 +537,8 @@ def show_search():
         l=["aaa","ccc"]
 
         try:
-            if selected == 'CLIENT FOLDER' and st.session_state.username in l:
+            #if selected == 'CLIENT FOLDER' and st.session_state.username in l:
+            if selected == 'CLIENT FOLDER':
                 if os.path.exists(upload):
                         
                         files=list_files()
