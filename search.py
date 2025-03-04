@@ -838,7 +838,7 @@ def show_search():
         st.markdown(hide,unsafe_allow_html=True)
        
         selected1=option_menu(menu_title=None,options=["CS Goals","CLIENT FOLDER","POC FOLDER"],icons=["","bi bi-folder","bi bi-folder"],orientation="horizontal",)
-        #print(selected)
+        
         if selected1 != st.session_state.selected_folder1:
             st.session_state.selected_folder1 = selected1
             st.session_state.file_selected1 = False
