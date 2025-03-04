@@ -173,7 +173,7 @@ def generate_pdf():
     try:
         #if st.button("gen"):
             st.success("\nGenerating PDF...")  # Debugging log
-            time.sleep(2)
+            
             
             # Sample content
             pdf_content = "\n".join(d)
